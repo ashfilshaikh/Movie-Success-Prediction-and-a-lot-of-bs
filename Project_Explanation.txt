@@ -1,0 +1,128 @@
+# Project Explanation
+# Movie Success Prediction & Sentiment Study
+# How each part of the project works
+
+
+## STEP 1: Data Loading and Cleaning (01_data_loading_and_cleaning.py)
+
+### What it does:
+This script loads the raw data from the Excel file and cleans it before analysis.
+
+### How it works:
+
+1. We use `pandas.read_excel()` to load the .xlsx file into a DataFrame.
+
+2. We check for MISSING VALUES using `df.isnull().sum()`.
+   - If any cell is empty or has NaN, we drop that row using `df.dropna()`.
+   - This is important because missing data can cause errors in analysis.
+
+3. We check for DUPLICATE ROWS using `df.duplicated().sum()`.
+   - If two rows are exactly the same, we keep only one using `df.drop_duplicates()`.
+
+4. We clean the REVIEW TEXT:
+   - Convert to lowercase: "GREAT Movie!" becomes "great movie!"
+   - Remove special characters: keeps only letters, numbers, and basic punctuation
+   - Remove extra spaces: "hello    world" becomes "hello world"
+   - We do this so that the sentiment analyzer gets clean text to work with.
+
+5. We standardize the GENRE column (strip whitespace, title case) and
+   SENTIMENT column (strip whitespace, lowercase) so there are no
+   inconsistencies like "action" vs "Action" vs " Action ".
+
+6. The cleaned data is saved to a new file: cleaned_movie_reviews.xlsx
+
+
+## STEP 2: Analysis (02_analysis.py)
+
+### What it does:
+This script runs sentiment analysis on the reviews and builds a model
+to predict how much money a movie will earn.
+
+### How VADER works:
+- VADER (Valence Aware Dictionary and sEntiment Reasoner) is a tool
+  that reads text and gives it a sentiment score.
+- The score ranges from -1 (very negative) to +1 (very positive).
+- We classify scores like this:
+    - score >= 0.05  -> positive
+    - score <= -0.05 -> negative
+    - in between     -> neutral
+- Example: "Absolutely loved this movie!" gets a high positive score.
+           "Terrible film, waste of time" gets a negative score.
+
+### How Linear Regression works:
+- Linear Regression tries to find a relationship between input features
+  and an output value.
+- Our inputs (features): rating, budget, vader_score
+- Our output (target): gross_earning
+- We split the data: 80% for training, 20% for testing.
+- The model learns from training data and we test it on unseen data.
+- We measure performance using:
+    - RMSE (Root Mean Square Error): how far off predictions are on average
+    - R2 Score: how well the model fits (1.0 = perfect, 0 = no relationship)
+
+### What happens in this script:
+1. Load cleaned data
+2. Run VADER on each review to get sentiment scores
+3. Compare VADER results with original labels to check accuracy
+4. Calculate average sentiment per genre
+5. Build Linear Regression model
+6. Print RMSE and R2 Score
+7. Save results to analyzed_movie_reviews.xlsx
+
+
+## STEP 3: Visualizations (03_visualizations.py)
+
+### What it does:
+Creates 5 charts from the analyzed data.
+
+### The 5 charts:
+
+1. BAR CHART - Average Sentiment Score by Genre
+   - Shows which genre has the most positive/negative reviews
+   - Uses seaborn's barplot
+
+2. SCATTER PLOT - Predicted vs Actual Gross Earnings
+   - Each dot is a movie from the test set
+   - X-axis: actual earnings, Y-axis: predicted earnings
+   - The red line shows where perfect predictions would be
+   - If the model was good, dots would be close to the red line
+
+3. PIE CHART - Sentiment Distribution
+   - Shows what percentage of reviews are positive, neutral, negative
+   - Gives a quick overview of overall sentiment
+
+4. BOX PLOT - Rating Distribution by Genre
+   - Shows the spread of ratings for each genre
+   - The box shows the middle 50% of ratings
+   - Lines (whiskers) show the full range
+
+5. HEATMAP - Correlation Matrix
+   - Shows how strongly each feature relates to others
+   - Values close to 1 or -1 mean strong relationship
+   - Values close to 0 mean weak/no relationship
+
+
+## STEP 4: Inferences (04_inferences.py)
+
+### What it does:
+Prints out the key findings and conclusions from the entire analysis.
+
+### Key findings:
+1. Most movie reviews in the dataset are positive
+2. Some genres get better sentiment than others
+3. VADER sentiment analysis matches original labels fairly well
+4. Linear Regression with just rating, budget, and sentiment cannot
+   accurately predict box office earnings
+5. Movie success depends on many factors beyond what we measured
+
+
+## LIBRARIES USED AND WHY:
+
+- pandas: For loading Excel files and working with data in tables
+- re (regex): For cleaning text by removing special characters
+- vaderSentiment: For analyzing sentiment of review text
+- scikit-learn: For building the Linear Regression model and splitting data
+- matplotlib: For creating basic charts
+- seaborn: For creating nicer-looking charts (built on top of matplotlib)
+- os: For creating the plots folder
+- math: For the sqrt function (used in RMSE calculation)
