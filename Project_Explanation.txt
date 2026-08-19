@@ -38,11 +38,17 @@ This script loads the raw data from the Excel file and cleans it before analysis
 This script runs sentiment analysis on the reviews and builds a model
 to predict how much money a movie will earn.
 
-### How VADER works:
-- VADER (Valence Aware Dictionary and sEntiment Reasoner) is a tool
-  that reads text and gives it a sentiment score.
-- The score ranges from -1 (very negative) to +1 (very positive).
-- We classify scores like this:
+### Deeper Look: What is VADER?
+- **VADER** stands for **Valence Aware Dictionary and sEntiment Reasoner**.
+- It is a special tool used in Natural Language Processing (NLP) specifically designed to understand sentiments expressed in social media, reviews, and short texts.
+- **How it works:** It uses a "lexicon" (a dictionary) where words are pre-scored for sentiment. For instance, "good" is positive, but "excellent" is highly positive.
+- **Context is Key:** VADER is smart enough to understand:
+    - *Capitalization:* "GREAT" is more positive than "great".
+    - *Punctuation:* "Good!!!" is more positive than "Good".
+    - *Modifiers:* "Extremely good" boosts the score compared to just "good".
+    - *Negations:* It knows that "not good" means bad.
+- **The Score:** VADER reads a sentence and outputs a "compound score" ranging from -1 (extremely negative) to +1 (extremely positive). 
+- We classify these scores like this:
     - score >= 0.05  -> positive
     - score <= -0.05 -> negative
     - in between     -> neutral
@@ -50,7 +56,7 @@ to predict how much money a movie will earn.
            "Terrible film, waste of time" gets a negative score.
 
 ### How Linear Regression works:
-- Linear Regression tries to find a relationship between input features
+- Linear Regression tries to find a mathematical relationship between input features
   and an output value.
 - Our inputs (features): rating, budget, vader_score
 - Our output (target): gross_earning
@@ -110,9 +116,9 @@ Prints out the key findings and conclusions from the entire analysis.
 ### Key findings:
 1. Most movie reviews in the dataset are positive
 2. Some genres get better sentiment than others
-3. VADER sentiment analysis matches original labels fairly well
+3. VADER sentiment analysis matches original labels fairly well (~70% match)
 4. Linear Regression with just rating, budget, and sentiment cannot
-   accurately predict box office earnings
+   accurately predict box office earnings (R2 is near zero).
 5. Movie success depends on many factors beyond what we measured
 
 
@@ -120,7 +126,7 @@ Prints out the key findings and conclusions from the entire analysis.
 
 - pandas: For loading Excel files and working with data in tables
 - re (regex): For cleaning text by removing special characters
-- vaderSentiment: For analyzing sentiment of review text
+- vaderSentiment: For NLP analysis; understanding the emotion of review text
 - scikit-learn: For building the Linear Regression model and splitting data
 - matplotlib: For creating basic charts
 - seaborn: For creating nicer-looking charts (built on top of matplotlib)
