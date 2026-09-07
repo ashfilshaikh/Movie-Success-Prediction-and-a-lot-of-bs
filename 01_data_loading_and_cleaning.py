@@ -19,14 +19,20 @@ print()
 
 # --- Data Cleaning ---
 
-# 1. Check for missing values
+# 1. Check and handle missing values
 print("Checking for missing values...")
 print(df.isnull().sum())
 print()
 
 missing = df.isnull().sum().sum()
 if missing > 0:
-    print(f"Found {missing} missing values. Dropping those rows...")
+    print(f"Found {missing} missing values. Imputing numeric columns with median and dropping rest...")
+    # Impute numeric columns with median
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    for col in numeric_cols:
+        df[col] = df[col].fillna(df[col].median())
+    
+    # Drop rows if they still have missing values (e.g., categorical/text columns)
     df = df.dropna()
 else:
     print("No missing values found!")
@@ -40,19 +46,35 @@ if duplicates > 0:
     print("Duplicates removed.")
 print()
 
-# 3. Clean the review text
-# - convert to lowercase
-# - remove extra spaces
-# - remove special characters
-print("Cleaning review text...")
+# 3. Handle invalid numerical values
+print("Handling numerical anomalies...")
+if 'budget' in df.columns:
+    df['budget'] = df['budget'].abs() # Ensure budget is positive
+if 'gross_earning' in df.columns:
+    df['gross_earning'] = df['gross_earning'].abs() # Ensure gross earning is positive
+print()
+
+# 4. Clean the review text and other strings
+print("Cleaning text columns...")
+if 'movie_title' in df.columns:
+    df['movie_title'] = df['movie_title'].astype(str).str.strip().str.title()
+
 df['review_tweet'] = df['review_tweet'].astype(str).str.strip()
 df['review_tweet'] = df['review_tweet'].str.lower()
-df['review_tweet'] = df['review_tweet'].apply(lambda x: re.sub(r'[^a-z0-9\s.,!?\'-]', '', x))
+# Remove URLs
+df['review_tweet'] = df['review_tweet'].apply(lambda x: re.sub(r'http\S+|www\.\S+', '', x))
+# Remove HTML tags
+df['review_tweet'] = df['review_tweet'].apply(lambda x: re.sub(r'<.*?>', '', x))
+# Remove numbers
+df['review_tweet'] = df['review_tweet'].apply(lambda x: re.sub(r'\d+', '', x))
+# Remove special characters
+df['review_tweet'] = df['review_tweet'].apply(lambda x: re.sub(r'[^a-z\s.,!?\'-]', '', x))
+# Remove extra spaces
 df['review_tweet'] = df['review_tweet'].apply(lambda x: re.sub(r'\s+', ' ', x).strip())
 print("Text cleaning done.")
 print()
 
-# 4. Standardize genre and sentiment columns
+# 5. Standardize genre and sentiment columns
 df['genre'] = df['genre'].str.strip().str.title()
 df['sentiment'] = df['sentiment'].str.strip().str.lower()
 
@@ -60,7 +82,7 @@ print("Unique genres:", df['genre'].unique().tolist())
 print("Unique sentiments:", df['sentiment'].unique().tolist())
 print()
 
-# 5. Check data types
+# 6. Check data types
 print("Data types:")
 print(df.dtypes)
 print()

@@ -85,4 +85,53 @@ plt.savefig("plots/05_correlation_heatmap.png")
 plt.close()
 print("Saved: plots/05_correlation_heatmap.png")
 
+# --- Plot 6: Budget vs Gross Earning (Scatter Plot) ---
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=df, x='budget', y='gross_earning', alpha=0.6, color='purple')
+plt.title("Budget vs Gross Earning")
+plt.xlabel("Budget")
+plt.ylabel("Gross Earning")
+plt.tight_layout()
+plt.savefig("plots/06_budget_vs_gross.png")
+plt.close()
+print("Saved: plots/06_budget_vs_gross.png")
+
+# --- Plot 7: Number of Movies by Genre (Count Plot) ---
+
+plt.figure(figsize=(10, 6))
+sns.countplot(data=df, x='genre', order=df['genre'].value_counts().index, palette='viridis', hue='genre', legend=False)
+plt.title("Number of Movies by Genre")
+plt.xlabel("Genre")
+plt.ylabel("Count")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig("plots/07_movies_per_genre.png")
+plt.close()
+print("Saved: plots/07_movies_per_genre.png")
+
+# --- Plot 8: Distribution of VADER Scores (Histogram) ---
+
+plt.figure(figsize=(8, 6))
+sns.histplot(df['vader_score'], bins=30, kde=True, color='teal')
+plt.title("Distribution of VADER Sentiment Scores")
+plt.xlabel("VADER Score")
+plt.ylabel("Frequency")
+plt.tight_layout()
+plt.savefig("plots/08_vader_score_distribution.png")
+plt.close()
+print("Saved: plots/08_vader_score_distribution.png")
+
+# --- Plot 9: Rating vs Gross Earning (Scatter Plot) ---
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=df, x='rating', y='gross_earning', alpha=0.5, color='orange')
+plt.title("Rating vs Gross Earning")
+plt.xlabel("Rating")
+plt.ylabel("Gross Earning")
+plt.tight_layout()
+plt.savefig("plots/09_rating_vs_gross.png")
+plt.close()
+print("Saved: plots/09_rating_vs_gross.png")
+
 print("\nAll visualizations saved in plots/ folder.")
